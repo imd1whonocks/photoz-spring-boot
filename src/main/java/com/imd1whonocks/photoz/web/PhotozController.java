@@ -1,17 +1,13 @@
-package com.imd1whonocks.photoz;
+package com.imd1whonocks.photoz.web;
 
+import com.imd1whonocks.photoz.model.Photo;
+import com.imd1whonocks.photoz.service.PhotozService;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 public class PhotozController {
@@ -33,25 +29,24 @@ public class PhotozController {
     }
 
     @GetMapping("/photoz")
-    public Collection<Photo> getPhotos() {
+    public Iterable<Photo> getPhotos() {
         return photozService.get();
     }
 
     @GetMapping("/photoz/{id}")
-    public Photo getPhoto(@PathVariable String id) {
+    public Photo getPhoto(@PathVariable Integer id) {
         Photo photo = photozService.get(id);
         if (photo == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return photo;
     }
 
     @DeleteMapping("/photoz/{id}")
-    public void deletePhoto(@PathVariable String id) {
-        Photo photo = photozService.remove(id);
-        if (photo == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    public void deletePhoto(@PathVariable Integer id) {
+        photozService.remove(id);
     }
 
     @PostMapping("/photoz")
     public Photo create(@RequestPart("data") MultipartFile file) throws IOException {
-        return photozService.save(file.getOriginalFilename(), file.getBytes());
+        return photozService.save(file.getOriginalFilename(), file.getContentType(), file.getBytes());
     }
 }
